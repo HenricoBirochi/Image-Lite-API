@@ -47,4 +47,8 @@ public class Image {
     @Lob // When you are going to save files in DataBase you need this annotation '@Lob'
     private byte[] file;
 
+    public String getFullFileName() {
+        return getName().concat(".").concat(getExtension().name());
+    }
+
 }

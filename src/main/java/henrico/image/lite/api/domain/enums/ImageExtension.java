@@ -1,5 +1,6 @@
 package henrico.image.lite.api.domain.enums;
 
+import lombok.Getter;
 import org.springframework.http.MediaType;
 
 import java.util.Arrays;
@@ -9,7 +10,8 @@ public enum ImageExtension {
     GIF(MediaType.IMAGE_GIF),
     JPEG(MediaType.IMAGE_JPEG);
 
-    private MediaType mediaType;
+    @Getter
+    private final MediaType mediaType;
 
     ImageExtension(MediaType mediaType) {
         this.mediaType = mediaType;
