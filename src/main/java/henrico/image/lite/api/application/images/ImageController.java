@@ -19,7 +19,7 @@ import java.util.List;
 @RequestMapping("/v1/images")
 @Slf4j
 @RequiredArgsConstructor
-public class ImagesController {
+public class ImageController {
 
     private final ImageService service;
 
@@ -53,8 +53,7 @@ public class ImagesController {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(image.getExtension().getMediaType());
         headers.setContentLength(image.getSize());
-        // inline; filename="image.PNG"
-        headers.setContentDispositionFormData("inline; filename=\"" + image.getFullFileName() + "\"", image.getFullFileName());
+        headers.setContentDispositionFormData("inline; filename=\"" + image.getFullFileName() + "\"", image.getFullFileName()); // inline; filename="image.PNG"
 
         return new ResponseEntity<byte[]>(image.getFile(), headers, HttpStatus.OK);
     }

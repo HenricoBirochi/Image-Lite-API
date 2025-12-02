@@ -2,17 +2,16 @@ package henrico.image.lite.api.domain.entity;
 
 import henrico.image.lite.api.domain.enums.ImageExtension;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
 
 // Lombok Annotations
-@Data // It creates getters, setters, toString, hashCode and equals
+//@Data // Spring said that this annotation in a JPA Entity can cause several problems in performance // It creates getters, setters, toString, hashCode and equals
+@Getter
+@Setter
 @NoArgsConstructor // It creates a no args constructor
 @AllArgsConstructor // It creates a constructor with all attributes of this class
 @Builder // It's required to user the 'builder' method, that is very useful to instantiate an object of this class
