@@ -58,6 +58,8 @@ public class ImageController {
         return new ResponseEntity<byte[]>(image.getFile(), headers, HttpStatus.OK);
     }
 
+//    public ResponseEntity<List<ImageDTO>>
+
     public URI buildImageURL(Image image) {
         String imagePath = "/" + image.getId();
         return ServletUriComponentsBuilder
