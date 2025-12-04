@@ -1,6 +1,7 @@
 package henrico.image.lite.api.application.images;
 
 import henrico.image.lite.api.domain.entity.Image;
+import henrico.image.lite.api.domain.enums.ImageExtension;
 import henrico.image.lite.api.domain.service.ImageService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -14,10 +15,11 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import java.io.IOException;
 import java.net.URI;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/v1/images")
-@Slf4j
+@Slf4j // the 'Slf4j' annotation is used to create logs
 @RequiredArgsConstructor
 public class ImageController {
 
@@ -41,7 +43,7 @@ public class ImageController {
         return ResponseEntity.created(imageUri).build();
     }
 
-    @GetMapping("{id}")
+    @GetMapping("/{id}")
     public ResponseEntity<byte[]> getImage(@PathVariable("id") String id) {
         var possibleImage = service.getById(id);
         if(possibleImage.isEmpty()) {
@@ -55,15 +57,29 @@ public class ImageController {
         headers.setContentLength(image.getSize());
         headers.setContentDispositionFormData("inline; filename=\"" + image.getFullFileName() + "\"", image.getFullFileName()); // inline; filename="image.PNG"
 
-        return new ResponseEntity<byte[]>(image.getFile(), headers, HttpStatus.OK);
+        return new ResponseEntity<>(image.getFile(), headers, HttpStatus.OK);
     }
 
-//    public ResponseEntity<List<ImageDTO>>
+    @GetMapping
+    public ResponseEntity<List<ImageDTO>> search(
+            @RequestParam(value = "extension", required = false) String extension,
+            @RequestParam(value = "query", required = false) String query) {
+
+        var iExtension = ImageExtension.ofName(extension);
+        var result = service.search(iExtension, query);
+
+        var newDTOList = result.stream().map(image -> {
+            var url = buildImageURL(image);
+            return mapper.imageToDTO(image, url.toString());
+        }).collect(Collectors.toList());
+
+        return ResponseEntity.ok(newDTOList);
+    }
 
     public URI buildImageURL(Image image) {
         String imagePath = "/" + image.getId();
         return ServletUriComponentsBuilder
-                .fromCurrentRequest()
+                .fromCurrentRequestUri()
                 .path(imagePath)
                 .build().toUri();
     }

@@ -23,4 +23,14 @@ public enum ImageExtension {
                 .findFirst()
                 .orElse(null);
     }
+
+    // Using this method to find the ENUM by the 'input String' instead of using the default ENUM method 'valueOf' is better because
+    // in this method, if the input string is empty, it returns null, which means that this extension name is not necessary
+    // to do the query and find the images
+    public static ImageExtension ofName(String name) {
+        return Arrays.stream(values())
+                .filter(ie -> ie.name().equalsIgnoreCase(name))
+                .findFirst()
+                .orElse(null);
+    }
 }
