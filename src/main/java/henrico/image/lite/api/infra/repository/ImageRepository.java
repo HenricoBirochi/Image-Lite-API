@@ -2,6 +2,8 @@ package henrico.image.lite.api.infra.repository;
 
 import henrico.image.lite.api.domain.entity.Image;
 import henrico.image.lite.api.domain.enums.ImageExtension;
+import henrico.image.lite.api.infra.repository.specs.GenericSpecs;
+import henrico.image.lite.api.infra.repository.specs.ImageSpecs;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
@@ -20,22 +22,18 @@ public interface ImageRepository extends JpaRepository<Image, String>, JpaSpecif
 
     default List<Image> findByExtensionAndNameOrTagsLike(ImageExtension extension, String query) {
         // SELECT * FROM images WHERE 1 = 1
-        Specification<Image> conjunction = (root, q, criteriaBuilder) -> criteriaBuilder.conjunction();
-        Specification<Image> spec = Specification.where(conjunction);
+        Specification<Image> spec = Specification.where(GenericSpecs.conjunction());
 
         if(extension != null) {
             // AND extension = 'PNG'
-            Specification<Image> extensionEqual = (root, q, cb) -> cb.equal(root.get("extension"), extension);
-            spec = spec.and(extensionEqual);
+            spec = spec.and(ImageSpecs.extensionEqual(extension));
         }
 
         if(StringUtils.hasText(query)) {
             // AND ( name LIKE 'query' OR tags LIKE 'query' )
             // RIVER => %RI%
-            Specification<Image> nameLike = (root, q, cb)
-                    -> cb.like(cb.upper(root.get("name")), "%" + query.toUpperCase() + "%");
-            Specification<Image> tagsLike = (root, q, cb)
-                    -> cb.like(cb.upper(root.get("tags")), "%" + query.toUpperCase() + "%");
+            Specification<Image> nameLike = ImageSpecs.nameLike(query);
+            Specification<Image> tagsLike = ImageSpecs.tagsLike(query);
 
             Specification<Image> nameOrTagsLike = Specification.anyOf(nameLike, tagsLike);
 
